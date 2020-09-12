@@ -1,0 +1,43 @@
+<h2>Background Threads</h2>
+
+Msg: <input id='msg' type='textfield' value='a message' /><br>
+<button onclick="assignTask({tarefa:'heyMae',dados:{texto:'Eu tenho uma guitarra eletrica'}})">Hey Mae</button><br>
+<button onclick="assignTask({tarefa:'lerArquivo',dados:{path:'bal/bla/bla.txt'}})">Ler arquivo</button>
+<label id='received'></label>
+<br><br>
+
+Task: <input id='task' type='textfield' value='a task' /><br>
+<button onclick="assignTask({tarefa:'lerPasta',dados:{path:'bal/bla/bla'}})">Ler pasta</button>
+<br><br>
+
+<label id='threads'>0</label> background threads available<br>
+<label id='tasks'>0</label> tasks queued
+
+<script type="text/javascript">
+	const { ipcRenderer } = require('electron')
+
+	function setVal(id, value) {
+		document.getElementById(id).innerHTML = value
+	}
+
+	function toMain() {
+		ipcRenderer.send('to-main', document.getElementById('msg').value)
+	}
+
+	function toBg() {
+		ipcRenderer.send('for-background', document.getElementById('msg').value)
+	}
+
+	function assignTask(tarefa) {
+		ipcRenderer.send('assign-task', tarefa)
+	}
+
+	ipcRenderer.on('to-renderer', (event, arg) => {
+		setVal('received', arg)
+	})
+
+	ipcRenderer.on('status', (event, threads, tasks) => {
+		setVal('threads', threads)
+		setVal('tasks', tasks)
+	})
+</script>

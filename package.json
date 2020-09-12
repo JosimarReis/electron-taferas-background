@@ -1,0 +1,15 @@
+{
+  "name": "electron-taferas-background",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "postinstall": "electron-builder install-app-deps",
+    "test": "mocha",
+    "pack": "build --dir",
+    "dist": "electron-builder",
+    "build": "electron-packager E:\\trabalhos\\wagner\\EstruturarDocumentos\\EstruturarExtratos\\EstruturarExtratos EstruturarExtratos --overwrite --platform=win32 --arch=x64 --out=build  --icon=./src/icon.ico"
+  },
+  "dependencies": {
+    "electron": "^10.1.1"
+  }
+}

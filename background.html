@@ -1,0 +1,63 @@
+<h1>Background</h1>
+
+<script type="text/javascript">
+	const { ipcRenderer } = require('electron');
+
+	// Envia logs como mensagens para o thread principal para mostrar no console
+	function log(value) {
+		ipcRenderer.send('to-main', value);
+	}
+
+	// informa ao thread principal que este thread está pronto para processar algo
+	function ready() {
+		ipcRenderer.send('ready')
+	}
+
+	// faça algum trabalho que amarre o processador por um tempo
+	function work(tarefa) {
+		// see https://gist.github.com/tkrueger/3500612 for generating load
+		var start = new Date().getTime()
+		var result = 0
+		var finished = false
+		while (!finished) {
+			result += Math.random() * Math.random()
+			finished = new Date().getTime() > start + 10000
+		}
+	}
+
+	const tarefas = {
+		lerArquivo: async function (dados) {
+			return new Promise((resolve, reject) => {
+				resolve(dados)
+			}).then(console.log)
+		},
+		lerPasta: async function (dados) {
+			return new Promise((resolve, reject) => {
+				resolve(dados)
+			}).then(console.log)
+		},
+		heyMae: async function (dados) {
+			return new Promise((resolve, reject) => {
+				resolve(dados)
+			}).then(console.log)
+		},
+	}
+
+	// if message is received, pass it back to the renderer via the main thread
+	ipcRenderer.on('message', (event, arg) => {
+		log('received ' + arg)
+		ipcRenderer.send('for-renderer', process.pid + ': reply to ' + arg)
+		ready()
+	});
+
+	ipcRenderer.on('task', async (event, arg) => {
+		log('starting ')
+		log(arg)
+		await tarefas[arg.tarefa](arg)
+		log('finished')
+		log(arg)
+		ready()
+	})
+
+	ready()
+</script>
